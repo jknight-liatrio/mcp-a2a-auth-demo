@@ -1,0 +1,101 @@
+# -*- mode: Python -*-
+
+# Tiltfile for MCP A2A Auth Demo
+# Manages kustomize resources and envoy-jwt-auth-helper image builds
+#
+# Deployment order:
+#   1. SPIRE (spire-server → spire-agent → registrations)
+#   2. Infrastructure (postgres → keycloak)
+#   3. Applications (backend → frontend)
+
+# ============================================================
+# Configuration
+# ============================================================
+
+# Allow deploying to kind cluster
+allow_k8s_contexts(['kind-kind', 'kind-mcp-demo'])
+
+# ============================================================
+# Docker Build: envoy-jwt-auth-helper
+# ============================================================
+
+docker_build(
+    'envoy-jwt-auth-helper',
+    context='./envoy-jwt-auth-helper',
+    dockerfile='./envoy-jwt-auth-helper/Dockerfile',
+    live_update=[
+        # Sync Go source files for faster iteration (requires rebuild)
+        sync('./envoy-jwt-auth-helper/', '/build/'),
+        run('cd /build && go build -o /opt/helper/envoy-jwt-auth-helper .', trigger=['./envoy-jwt-auth-helper/*.go', './envoy-jwt-auth-helper/pkg/**/*.go']),
+    ],
+)
+
+# ============================================================
+# Kustomize Resources
+# ============================================================
+
+# Load all resources via kustomize
+k8s_yaml(kustomize('.'))
+
+# ============================================================
+# Resource Groups
+# ============================================================
+
+# ----- SPIRE -----
+k8s_resource(
+    'spire-server',
+    labels=['spire'],
+    new_name='spire-server',
+)
+
+k8s_resource(
+    'spire-agent',
+    labels=['spire'],
+    resource_deps=['spire-server'],
+)
+
+
+# ----- Infrastructure -----
+k8s_resource(
+    'postgres',
+    labels=['infra'],
+    resource_deps=['spire-agent'],
+)
+
+k8s_resource(
+    'keycloak',
+    labels=['infra'],
+    resource_deps=['postgres', 'spire-agent'],
+    port_forwards=['8080:8080'],
+)
+
+# ----- Applications -----
+k8s_resource(
+    'backend',
+    labels=['app'],
+)
+
+k8s_resource(
+    'frontend',
+    labels=['app'],
+    resource_deps=['backend'],
+    port_forwards=['3000:3000'],
+)
+
+# ============================================================
+# Config file watches (trigger re-deploy on config changes)
+# ============================================================
+
+# Watch backend configs
+watch_file('./k8s/backend/config/')
+watch_file('./k8s/backend/backend-deployment.yaml')
+
+# Watch frontend configs
+watch_file('./k8s/frontend/config/')
+watch_file('./k8s/frontend/frontend-deployment.yaml')
+
+# Watch keycloak/infra configs
+watch_file('./config/')
+
+# Watch SPIRE configs
+watch_file('./spire/')
