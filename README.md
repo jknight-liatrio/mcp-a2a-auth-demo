@@ -1,10 +1,10 @@
 # OSS Demo Assets
 
-OSSに関する講演や記事で使用するサンプルや例を集めたリポジトリです。
+This repository collects samples and examples used in OSS-related talks and articles.
 
 ## Precautions
 
-当該サンプルプログラムは現状有姿で提供されるものであり、いかなる保証も提供されません。また、このサンプルプログラムの使用から生ずるいかなる損害に対しても、責任を負いません。
+These sample programs are provided “as is” and without warranty of any kind. We assume no responsibility or liability for any damages arising from the use of these sample programs.
 
 ## License
 

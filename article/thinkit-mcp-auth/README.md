@@ -1,4 +1,3 @@
-# Keycloakで実践するMCPの認証/認可
+# MCP Authentication/Authorization in Practice with Keycloak
 
-Think IT連載「[Keycloakで実践するMCPの認証/認可](https://thinkit.co.jp/corner/12095)」のコードリポジトリです。
-
+This is the code repository for the Think IT article series “[MCP Authentication/Authorization in Practice with Keycloak](https://thinkit.co.jp/corner/12095)”.
