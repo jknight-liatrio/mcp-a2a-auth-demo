@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+
+
+resources:
+  - frontend-deployment.yaml
+  - frontend-service.yaml
+
+configMapGenerator:
+  - name: frontend-envoy
+    files:
+      - config/envoy.yaml
+  - name: fe-envoy-jwt-auth-helper-config1
+    files:
+      - envoy-jwt-auth-helper1.conf=config/envoy-jwt-auth-helper1.conf
+  - name: fe-envoy-jwt-auth-helper-config2
+    files:
+      - envoy-jwt-auth-helper2.conf=config/envoy-jwt-auth-helper2.conf
+  - name: nginx-config
+    files:
+      - proxy.conf=config/proxy.conf
+
+generatorOptions:
+  disableNameSuffixHash: true

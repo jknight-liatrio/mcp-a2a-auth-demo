@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-envoy
+  labels:
+    app: backend
+spec:
+  ports:
+    - protocol: TCP
+      port: 9001
+      targetPort: 9001
+      name: envoy
+  selector:
+    app: backend

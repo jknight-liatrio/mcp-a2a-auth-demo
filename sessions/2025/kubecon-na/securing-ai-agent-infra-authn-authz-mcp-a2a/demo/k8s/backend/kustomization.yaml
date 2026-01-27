@@ -1,0 +1,27 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - backend-deployment.yaml
+  - backend-service.yaml
+
+configMapGenerator:
+  - name: backend-envoy
+    files:
+      - config/envoy.yaml
+  - name: be-envoy-jwt-auth-helper-config
+    files:
+      - envoy-jwt-auth-helper.conf=config/envoy-jwt-auth-helper.conf
+  - name: backend-profile-json-data
+    files:
+      - mcp.json=config/mcp.json
+  - name: backend-nginx
+    files:
+      - backend-mcp.conf=config/backend-mcp.conf
+  - name: backend-opa-policy-config
+    files:
+      - opa-policy.rego=config/opa-policy.rego
+      - opa-config.yaml=config/opa-config.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
