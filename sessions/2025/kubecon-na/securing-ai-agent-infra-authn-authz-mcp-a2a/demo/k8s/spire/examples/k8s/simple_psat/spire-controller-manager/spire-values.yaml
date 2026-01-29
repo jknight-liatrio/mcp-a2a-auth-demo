@@ -22,6 +22,7 @@ spiffe-oidc-discovery-provider:
   enabled: false
 
 spire-server:
+  logLevel: DEBUG
   jwtIssuer: "spiffe://example.org"
   federation:
     enabled: true
@@ -34,6 +35,7 @@ spire-server:
         - spire:spire-agent
 
 spire-agent:
+  logLevel: DEBUG
   socketPath: /run/spire/sockets/spire-agent.sock
   workloadAttestors:
     k8s:

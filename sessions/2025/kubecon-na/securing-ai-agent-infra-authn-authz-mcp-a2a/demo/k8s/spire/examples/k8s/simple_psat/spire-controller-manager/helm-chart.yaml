@@ -503,7 +503,7 @@ data:
     {
       "agent": {
         "data_dir": "/var/lib/spire",
-        "log_level": "info",
+        "log_level": "DEBUG",
         "retry_bootstrap": true,
         "server_address": "spire-server.spire",
         "server_port": "443",
@@ -664,7 +664,7 @@ data:
           }
         },
         "jwt_issuer": "spiffe://example.org",
-        "log_level": "info",
+        "log_level": "DEBUG",
         "trust_domain": "example.org"
       }
     }
@@ -1108,7 +1108,7 @@ spec:
     metadata:
       annotations:
         kubectl.kubernetes.io/default-container: spire-agent
-        checksum/config: "37faa4725e613dad20a0013bda7e4b5c080568d73b8fa1adb4d123dde12d6332"
+        checksum/config: "7c5d1d9c76b4c47804950d7bc8d1ed036651d00ca66b6cb187844f8054371bcd"
       labels:
         app.kubernetes.io/name: "agent"
         app.kubernetes.io/instance: "spire"
@@ -1234,7 +1234,7 @@ spec:
     metadata:
       annotations:
         kubectl.kubernetes.io/default-container: spire-server
-        checksum/config: b7ca425308d4b46867cbef5ca05a0f1fdf028fc93e4b12fdb09fde852d3a6ff9
+        checksum/config: b6a02f01d152fc6c4ffd5387ee629dcc04ac775573636d3f5824c4020c0b0b5a
         checksum/config2: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
         checksum/config3: d94dc72279f0c877c9231caef9a5e9a792de6a59f584a392580b28e59bb6752f
         checksum/configTornjak: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
