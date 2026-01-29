@@ -14,6 +14,10 @@ spec:
       labels:
         app: frontend
     spec:
+      hostAliases:
+        - ip: "172.18.0.3"  # k3d node IP for NodePort access
+          hostnames:
+            - "keycloak.local"
       containers:
       # Envoy sidecar
       - name: envoy

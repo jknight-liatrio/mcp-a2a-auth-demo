@@ -23,6 +23,7 @@ spiffe-oidc-discovery-provider:
 
 spire-server:
   logLevel: DEBUG
+  defaultJwtSvidTTL: 120s
   jwtIssuer: "spiffe://example.org"
   federation:
     enabled: true

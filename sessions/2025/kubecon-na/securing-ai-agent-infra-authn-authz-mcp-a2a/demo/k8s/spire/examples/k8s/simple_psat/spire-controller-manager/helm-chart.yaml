@@ -649,7 +649,7 @@ data:
         ],
         "ca_ttl": "24h",
         "data_dir": "/run/spire/data",
-        "default_jwt_svid_ttl": "1h",
+        "default_jwt_svid_ttl": "120s",
         "default_x509_svid_ttl": "4h",
         "federation": {
           "bundle_endpoint": {
@@ -1234,7 +1234,7 @@ spec:
     metadata:
       annotations:
         kubectl.kubernetes.io/default-container: spire-server
-        checksum/config: b6a02f01d152fc6c4ffd5387ee629dcc04ac775573636d3f5824c4020c0b0b5a
+        checksum/config: 4f8ba7e1e33405f90e94d7aa0e1b4655a68a74f2be175f04319c75ea117bed3c
         checksum/config2: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
         checksum/config3: d94dc72279f0c877c9231caef9a5e9a792de6a59f584a392580b28e59bb6752f
         checksum/configTornjak: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
