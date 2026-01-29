@@ -105,7 +105,9 @@ data:
           cert_file_path = "/run/spire/config/bootstrap.crt"
         }
       }
+
     }
+
 
     health_checks {
       listener_enabled = true

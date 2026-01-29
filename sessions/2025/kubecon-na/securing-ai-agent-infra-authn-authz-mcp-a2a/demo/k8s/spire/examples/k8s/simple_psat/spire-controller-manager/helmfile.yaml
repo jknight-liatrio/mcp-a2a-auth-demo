@@ -1,0 +1,11 @@
+repositories:
+  - name: spiffe
+    url: https://spiffe.github.io/helm-charts-hardened/
+
+releases:
+  - name: spire
+    namespace: spire
+    chart: spiffe/spire
+    version: 0.26.0
+    values:
+      - spire-values.yaml

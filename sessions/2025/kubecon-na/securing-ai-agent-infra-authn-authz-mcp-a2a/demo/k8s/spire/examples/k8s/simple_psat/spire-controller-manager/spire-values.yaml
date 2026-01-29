@@ -1,0 +1,36 @@
+global:
+  openshift: false
+  installAndUpgradeHooks:
+    enabled: false
+  spire:
+    recommendations:
+      enabled: false
+    namespaces:
+      create: false
+      system:
+        name: spire
+      server:
+        name: spire
+    clusterName: demo-cluster
+    trustDomain: example.org
+    caSubject:
+      country: US
+      organization: SPIFFE
+      commonName: example.org
+
+spire-server:
+  jwtIssuer: "spiffe://example.org"
+  nodeAttestor:
+    k8sPSAT:
+      enabled: true
+      serviceAccountAllowList:
+        - spire:spire-agent
+
+spire-agent:
+  socketPath: /run/spire/sockets/spire-agent.sock
+  workloadAttestors:
+    k8s:
+      skipKubeletVerification: true
+
+spiffe-csi-driver:
+  agentSocketPath: /run/spire/sockets/spire-agent.sock
