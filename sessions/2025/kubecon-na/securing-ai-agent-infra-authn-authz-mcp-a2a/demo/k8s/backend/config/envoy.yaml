@@ -51,6 +51,7 @@ static_resources:
               grpc_service:
                 envoy_grpc:
                   cluster_name: ext-authz
+                timeout: 30s
           - name: envoy.filters.http.router
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
