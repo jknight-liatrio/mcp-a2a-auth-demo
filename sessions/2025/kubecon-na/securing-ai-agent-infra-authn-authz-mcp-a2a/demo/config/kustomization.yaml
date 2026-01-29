@@ -3,11 +3,15 @@ kind: Kustomization
 
 resources:
   - keycloak.yaml
+  - keycloak-ingress.yaml
 
 configMapGenerator:
   - name: spire-server-ca
     files:
       - spire-server-ca-chain.pem
+  - name: demo-realm
+    files:
+      - demo-realm.json
 
 generatorOptions:
   disableNameSuffixHash: true

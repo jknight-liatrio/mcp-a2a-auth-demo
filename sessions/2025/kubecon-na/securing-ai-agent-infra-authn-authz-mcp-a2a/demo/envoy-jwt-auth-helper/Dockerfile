@@ -26,17 +26,14 @@ FROM alpine:3.19
 
 RUN apk add --no-cache ca-certificates
 
-# Create non-root user
-RUN addgroup -g 1000 helper && \
-    adduser -u 1000 -G helper -s /bin/sh -D helper
 
 # Create config directory
 RUN mkdir -p /opt/helper /run/auth-helper/config && \
-    chown -R helper:helper /opt/helper /run/auth-helper
+    chown -R root:root /opt/helper /run/auth-helper
 
 COPY --from=builder /build/envoy-jwt-auth-helper /opt/helper/envoy-jwt-auth-helper
 
-USER helper
+USER root
 
 ENTRYPOINT ["/opt/helper/envoy-jwt-auth-helper"]
 CMD ["-config", "/run/auth-helper/config/envoy-jwt-auth-helper.conf"]

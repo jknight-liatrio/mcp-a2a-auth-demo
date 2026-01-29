@@ -59,3 +59,154 @@ sessions/2025/kubecon-na/securing-ai-agent-infra-authn-authz-mcp-a2a/
 - **Downstream audience**:
   - Inbound decision mode: `envoy-jwt-auth-helper1.conf` (frontend) and backend helper conf.
   - Outbound token exchange: `envoy-jwt-auth-helper2.conf` (frontend) expects the backend audience.
+
+---
+
+## Quick Start with Kind
+
+### 1. Create a Kind Cluster
+
+```bash
+kind create cluster --name mcp-demo
+```
+
+Or use the default cluster:
+
+```bash
+kind create cluster  # Creates default 'kind' cluster
+```
+
+### 2. Deploy with Tilt
+
+Navigate to the demo directory and start Tilt:
+
+```bash
+cd demo
+tilt up
+```
+
+Tilt will:
+- Build the `envoy-jwt-auth-helper` Docker image
+- Load the image into the kind cluster
+- Deploy all Kubernetes resources via kustomize
+- Set up port forwards for Keycloak (8080) and Frontend (3000)
+
+### 3. Access the Demo
+
+Once deployed:
+- **Keycloak Admin Console**: http://localhost:8080
+- **Frontend**: http://localhost:3000
+
+### Deployment Order
+
+Tilt manages the deployment order automatically:
+
+```
+SPIRE (spire-server → spire-agent)
+         ↓
+Infrastructure (postgres → keycloak)
+         ↓
+Applications (backend → frontend)
+```
+
+---
+
+## Manual Deployment (without Tilt)
+
+### 1. Build and Load the Docker Image
+
+```bash
+cd demo/envoy-jwt-auth-helper
+docker build -t envoy-jwt-auth-helper:latest .
+kind load docker-image envoy-jwt-auth-helper:latest --name mcp-demo
+```
+
+### 2. Deploy with Kustomize
+
+```bash
+cd demo
+kubectl apply -k .
+```
+
+### 3. Port Forward Services
+
+```bash
+kubectl port-forward svc/keycloak 8080:8080 &
+kubectl port-forward svc/frontend 3000:3000 &
+```
+
+---
+
+## Architecture
+
+### SPIRE Integration
+
+The demo uses [SPIRE](https://spiffe.io/docs/latest/spire-about/) for workload identity:
+
+- **Trust Domain**: `example.org`
+- **SPIRE Server**: Deployed as a StatefulSet in the `spire` namespace
+- **SPIRE Agent**: Deployed as a DaemonSet on each node
+- **Workload Attestation**: Uses Kubernetes Projected Service Account Tokens (PSAT)
+
+Workloads receive SPIFFE Verifiable Identity Documents (SVIDs) for mutual TLS and JWT-based authentication.
+
+### Envoy JWT Auth Helper
+
+A Go-based external authorization service that integrates with Envoy and SPIRE:
+
+- **Token Validation**: Validates incoming JWTs against Keycloak
+- **Token Exchange**: Performs OAuth 2.0 token exchange using SPIFFE JWTs
+- **UMA Authorization**: Integrates with Keycloak's User-Managed Access for fine-grained permissions
+
+Configuration modes:
+- `access_token_validator_with_decision`: Validates tokens and makes authorization decisions
+- `access_token_exchanger`: Exchanges tokens for downstream service calls
+
+### Keycloak Configuration
+
+Keycloak is configured with:
+- SPIFFE trust bundle for verifying workload JWTs
+- UMA 2.0 support for resource-based authorization
+- OAuth 2.0 token exchange enabled
+
+The SPIRE CA certificate is mounted from the `spire-server-ca` ConfigMap.
+
+---
+
+## Troubleshooting
+
+### Check SPIRE Status
+
+```bash
+# Verify SPIRE server is running
+kubectl get pods -n spire
+
+# Check SPIRE server logs
+kubectl logs -n spire spire-server-0
+
+# Verify agent is connected
+kubectl exec -n spire spire-server-0 -- /opt/spire/bin/spire-server agent list
+```
+
+### Check Workload SVIDs
+
+```bash
+# List registered workloads
+kubectl exec -n spire spire-server-0 -- /opt/spire/bin/spire-server entry show
+```
+
+### Verify Keycloak
+
+```bash
+# Check Keycloak logs
+kubectl logs -l app=keycloak
+
+# Verify SPIRE CA is mounted
+kubectl exec deployment/keycloak -- ls -la /opt/keycloak/conf/truststores/
+```
+
+### Common Issues
+
+1. **SPIRE Agent not connecting**: Ensure the cluster name in SPIRE server config matches your k8s cluster
+2. **Keycloak startup failure**: Verify the `spire-server-ca-chain.pem` contains a valid PEM certificate
+3. **Token validation errors**: Check that workloads have valid SPIRE registrations

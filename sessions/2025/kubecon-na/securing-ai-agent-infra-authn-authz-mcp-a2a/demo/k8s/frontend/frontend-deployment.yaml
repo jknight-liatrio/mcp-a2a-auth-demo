@@ -89,4 +89,3 @@ spec:
           items:
           - key: proxy.conf
             path: proxy.conf
-            mode: 0644

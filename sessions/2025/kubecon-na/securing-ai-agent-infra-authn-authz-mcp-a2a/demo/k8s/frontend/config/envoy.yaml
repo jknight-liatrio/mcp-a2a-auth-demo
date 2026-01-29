@@ -78,6 +78,7 @@ static_resources:
               grpc_service:
                 envoy_grpc:
                   cluster_name: ext-authz-decision   # gRPC ext_authz server (decision) listening on 127.0.0.1:9021
+                timeout: 5s
           - name: envoy.filters.http.router
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
@@ -138,6 +139,7 @@ static_resources:
               grpc_service:
                 envoy_grpc:
                   cluster_name: ext-authz-exchange    # gRPC ext_authz server (exchange) listening on 127.0.0.1:9011
+                timeout: 5s
           - name: envoy.filters.http.router
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
@@ -157,7 +159,7 @@ static_resources:
         - endpoint:
             address:
               pipe:
-                path: /run/spire/sockets/agent.sock
+                path: /run/spire/sockets/spire-agent.sock
 
   # =========================================================
   # ext_authz (Inbound / UMA decision) - local gRPC server

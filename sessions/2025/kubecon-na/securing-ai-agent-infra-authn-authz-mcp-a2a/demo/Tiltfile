@@ -1,5 +1,8 @@
 # -*- mode: Python -*-
 
+# Load namespace extension to prevent Tilt from deleting namespaces it didn't create
+load('ext://namespace', 'namespace_create')
+
 # Tiltfile for MCP A2A Auth Demo
 # Manages kustomize resources and envoy-jwt-auth-helper image builds
 #
@@ -41,6 +44,14 @@ k8s_yaml(kustomize('.'))
 # Resource Groups
 # ============================================================
 
+# ----- Ingress -----
+k8s_resource(
+    'ingress-nginx-controller',
+    labels=['infra'],
+    port_forwards=['30080:80'],
+    new_name='ingress-nginx',
+)
+
 # ----- SPIRE -----
 k8s_resource(
     'spire-server',
@@ -65,8 +76,7 @@ k8s_resource(
 k8s_resource(
     'keycloak',
     labels=['infra'],
-    resource_deps=['postgres', 'spire-agent'],
-    port_forwards=['8080:8080'],
+    resource_deps=['postgres', 'spire-agent', 'ingress-nginx'],
 )
 
 # ----- Applications -----

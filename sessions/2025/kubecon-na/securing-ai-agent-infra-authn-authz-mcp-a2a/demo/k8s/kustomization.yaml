@@ -3,6 +3,9 @@ kind: Kustomization
 
 
 resources:
+  - ingress-nginx
   - spire/examples/k8s/simple_psat
+  - clusterspiffeid-frontend.yaml
+  - clusterspiffeid-backend.yaml
   - backend
   - frontend

@@ -1,4 +1,458 @@
 ---
+# Source: spire-crds/templates/spire.spiffe.io_clusterfederatedtrustdomains.yaml
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.11.1
+    helm.sh/resource-policy: keep
+  creationTimestamp: null
+  name: clusterfederatedtrustdomains.spire.spiffe.io
+spec:
+  group: spire.spiffe.io
+  names:
+    kind: ClusterFederatedTrustDomain
+    listKind: ClusterFederatedTrustDomainList
+    plural: clusterfederatedtrustdomains
+    singular: clusterfederatedtrustdomain
+  scope: Cluster
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .spec.trustDomain
+      name: Trust Domain
+      type: string
+    - jsonPath: .spec.bundleEndpointURL
+      name: Endpoint URL
+      type: string
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: ClusterFederatedTrustDomain is the Schema for the clusterfederatedtrustdomains
+          API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: ClusterFederatedTrustDomainSpec defines the desired state
+              of ClusterFederatedTrustDomain
+            properties:
+              bundleEndpointProfile:
+                description: BundleEndpointProfile is the profile for the bundle endpoint.
+                properties:
+                  endpointSPIFFEID:
+                    description: EndpointSPIFFEID is the SPIFFE ID of the bundle endpoint.
+                      It is required for the "https_spiffe" profile.
+                    type: string
+                  type:
+                    description: Type is the type of the bundle endpoint profile.
+                    enum:
+                    - https_spiffe
+                    - https_web
+                    type: string
+                required:
+                - type
+                type: object
+              bundleEndpointURL:
+                description: BundleEndpointURL is the URL of the bundle endpoint.
+                  It must be an HTTPS URL and cannot contain userinfo (i.e. username/password).
+                type: string
+              className:
+                description: Set the class of controller to handle this object.
+                type: string
+              trustDomain:
+                description: TrustDomain is the name of the trust domain to federate
+                  with (e.g. example.org)
+                pattern: '[a-z0-9._-]{1,255}'
+                type: string
+              trustDomainBundle:
+                description: TrustDomainBundle is the contents of the bundle for the
+                  referenced trust domain. This field is optional when the resource
+                  is created.
+                type: string
+            required:
+            - bundleEndpointProfile
+            - bundleEndpointURL
+            - trustDomain
+            type: object
+          status:
+            description: ClusterFederatedTrustDomainStatus defines the observed state
+              of ClusterFederatedTrustDomain
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+---
+# Source: spire-crds/templates/spire.spiffe.io_clusterspiffeids.yaml
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.11.1
+    helm.sh/resource-policy: keep
+  creationTimestamp: null
+  name: clusterspiffeids.spire.spiffe.io
+spec:
+  group: spire.spiffe.io
+  names:
+    kind: ClusterSPIFFEID
+    listKind: ClusterSPIFFEIDList
+    plural: clusterspiffeids
+    singular: clusterspiffeid
+  scope: Cluster
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: ClusterSPIFFEID is the Schema for the clusterspiffeids API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: ClusterSPIFFEIDSpec defines the desired state of ClusterSPIFFEID
+            properties:
+              admin:
+                description: Admin indicates whether or not the SVID can be used to
+                  access the SPIRE administrative APIs. Extra care should be taken
+                  to only apply this SPIFFE ID to admin workloads.
+                type: boolean
+              autoPopulateDNSNames:
+                description: AutoPopulateDNSNames indicates whether or not to auto
+                  populate service DNS names.
+                type: boolean
+              fallback:
+                description: |-
+                  Apply this ID only if there are no other matching non fallback
+                  ClusterSPIFFEIDs
+                type: boolean
+              dnsNameTemplates:
+                description: DNSNameTemplate represents templates for extra DNS names
+                  that are applicable to SVIDs minted for this ClusterSPIFFEID. The
+                  node and pod spec are made available to the template under .NodeSpec,
+                  .PodSpec respectively.
+                items:
+                  type: string
+                type: array
+              downstream:
+                description: Downstream indicates that the entry describes a downstream
+                  SPIRE server.
+                type: boolean
+              className:
+                description: Set the class of controller to handle this object.
+                type: string
+              federatesWith:
+                description: FederatesWith is a list of trust domain names that workloads
+                  that obtain this SPIFFE ID will federate with.
+                items:
+                  type: string
+                type: array
+              hint:
+                description: Set the entry hint
+                type: string
+              jwtTtl:
+                description: JWTTTL indicates an upper-bound time-to-live for JWT
+                  SVIDs minted for this ClusterSPIFFEID.
+                type: string
+              namespaceSelector:
+                description: NamespaceSelector selects the namespaces that are targeted
+                  by this CRD.
+                properties:
+                  matchExpressions:
+                    description: matchExpressions is a list of label selector requirements.
+                      The requirements are ANDed.
+                    items:
+                      description: A label selector requirement is a selector that
+                        contains values, a key, and an operator that relates the key
+                        and values.
+                      properties:
+                        key:
+                          description: key is the label key that the selector applies
+                            to.
+                          type: string
+                        operator:
+                          description: operator represents a key's relationship to
+                            a set of values. Valid operators are In, NotIn, Exists
+                            and DoesNotExist.
+                          type: string
+                        values:
+                          description: values is an array of string values. If the
+                            operator is In or NotIn, the values array must be non-empty.
+                            If the operator is Exists or DoesNotExist, the values
+                            array must be empty. This array is replaced during a strategic
+                            merge patch.
+                          items:
+                            type: string
+                          type: array
+                      required:
+                      - key
+                      - operator
+                      type: object
+                    type: array
+                  matchLabels:
+                    additionalProperties:
+                      type: string
+                    description: matchLabels is a map of {key,value} pairs. A single
+                      {key,value} in the matchLabels map is equivalent to an element
+                      of matchExpressions, whose key field is "key", the operator
+                      is "In", and the values array contains only "value". The requirements
+                      are ANDed.
+                    type: object
+                type: object
+                x-kubernetes-map-type: atomic
+              podSelector:
+                description: PodSelector selects the pods that are targeted by this
+                  CRD.
+                properties:
+                  matchExpressions:
+                    description: matchExpressions is a list of label selector requirements.
+                      The requirements are ANDed.
+                    items:
+                      description: A label selector requirement is a selector that
+                        contains values, a key, and an operator that relates the key
+                        and values.
+                      properties:
+                        key:
+                          description: key is the label key that the selector applies
+                            to.
+                          type: string
+                        operator:
+                          description: operator represents a key's relationship to
+                            a set of values. Valid operators are In, NotIn, Exists
+                            and DoesNotExist.
+                          type: string
+                        values:
+                          description: values is an array of string values. If the
+                            operator is In or NotIn, the values array must be non-empty.
+                            If the operator is Exists or DoesNotExist, the values
+                            array must be empty. This array is replaced during a strategic
+                            merge patch.
+                          items:
+                            type: string
+                          type: array
+                      required:
+                      - key
+                      - operator
+                      type: object
+                    type: array
+                  matchLabels:
+                    additionalProperties:
+                      type: string
+                    description: matchLabels is a map of {key,value} pairs. A single
+                      {key,value} in the matchLabels map is equivalent to an element
+                      of matchExpressions, whose key field is "key", the operator
+                      is "In", and the values array contains only "value". The requirements
+                      are ANDed.
+                    type: object
+                type: object
+                x-kubernetes-map-type: atomic
+              spiffeIDTemplate:
+                description: SPIFFEID is the SPIFFE ID template. The node and pod
+                  spec are made available to the template under .NodeSpec, .PodSpec
+                  respectively.
+                type: string
+              ttl:
+                description: TTL indicates an upper-bound time-to-live for X509 SVIDs
+                  minted for this ClusterSPIFFEID. If unset, a default will be chosen.
+                type: string
+              workloadSelectorTemplates:
+                description: WorkloadSelectorTemplates are templates to produce arbitrary
+                  workload selectors that apply to a given workload before it will
+                  receive this SPIFFE ID. The rendered value is interpreted by SPIRE
+                  and are of the form type:value, where the value may, and often does,
+                  contain semicolons, .e.g., k8s:container-image:docker/hello-world
+                  The node and pod spec are made available to the template under .NodeSpec,
+                  .PodSpec respectively.
+                items:
+                  type: string
+                type: array
+            required:
+            - spiffeIDTemplate
+            type: object
+          status:
+            description: ClusterSPIFFEIDStatus defines the observed state of ClusterSPIFFEID
+            properties:
+              stats:
+                description: Stats produced by the last entry reconciliation run
+                properties:
+                  entriesMasked:
+                    description: How many entries were masked by entries for other
+                      ClusterSPIFFEIDs. This happens when one or more ClusterSPIFFEIDs
+                      produce an entry for the same pod with the same set of workload
+                      selectors.
+                    type: integer
+                  entriesToSet:
+                    description: How many entries are to be set for this ClusterSPIFFEID.
+                      In nominal conditions, this should reflect the number of pods
+                      selected, but not always if there were problems encountered
+                      rendering an entry for the pod (RenderFailures) or entries are
+                      masked (EntriesMasked).
+                    type: integer
+                  entryFailures:
+                    description: How many entries were unable to be set due to failures
+                      to create or update the entries via the SPIRE Server API.
+                    type: integer
+                  namespacesIgnored:
+                    description: How many (selected) namespaces were ignored (based
+                      on configuration).
+                    type: integer
+                  namespacesSelected:
+                    description: How many namespaces were selected.
+                    type: integer
+                  podEntryRenderFailures:
+                    description: How many failures were encountered rendering an entry
+                      selected pods. This could be due to either a bad template in
+                      the ClusterSPIFFEID or Pod metadata that when applied to the
+                      template did not produce valid entry values.
+                    type: integer
+                  podsSelected:
+                    description: How many pods were selected out of the namespaces.
+                    type: integer
+                type: object
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+---
+# Source: spire-crds/templates/spire.spiffe.io_clusterstaticentries.yaml
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.11.1
+    helm.sh/resource-policy: keep
+  creationTimestamp: null
+  name: clusterstaticentries.spire.spiffe.io
+spec:
+  group: spire.spiffe.io
+  names:
+    kind: ClusterStaticEntry
+    listKind: ClusterStaticEntryList
+    plural: clusterstaticentries
+    singular: clusterstaticentry
+  scope: Cluster
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: ClusterStaticEntry is the Schema for the clusterstaticentries
+          API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: ClusterStaticEntrySpec defines the desired state of ClusterStaticEntry
+            properties:
+              admin:
+                type: boolean
+              className:
+                description: Set the class of controller to handle this object.
+                type: string
+              dnsNames:
+                items:
+                  type: string
+                type: array
+              downstream:
+                type: boolean
+              federatesWith:
+                items:
+                  type: string
+                type: array
+              hint:
+                type: string
+              jwtSVIDTTL:
+                type: string
+              parentID:
+                type: string
+              selectors:
+                items:
+                  type: string
+                type: array
+              spiffeID:
+                type: string
+              storeSVID:
+                type: boolean
+              x509SVIDTTL:
+                type: string
+            required:
+            - parentID
+            - selectors
+            - spiffeID
+            type: object
+          status:
+            description: ClusterStaticEntryStatus defines the observed state of ClusterStaticEntry
+            properties:
+              masked:
+                description: If the static entry was masked by another entry.
+                type: boolean
+              rendered:
+                description: If the static entry rendered properly.
+                type: boolean
+              set:
+                description: If the static entry was successfully created/updated.
+                type: boolean
+            required:
+            - masked
+            - rendered
+            - set
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+
+---
 # Source: spire/charts/spiffe-csi-driver/templates/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -10,19 +464,6 @@ metadata:
     app.kubernetes.io/name: spiffe-csi-driver
     app.kubernetes.io/instance: spire
     app.kubernetes.io/version: "0.2.7"
-    app.kubernetes.io/managed-by: Helm
----
-# Source: spire/charts/spiffe-oidc-discovery-provider/templates/serviceaccount.yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: spire-spiffe-oidc-discovery-provider
-  namespace: spire
-  labels:
-    helm.sh/chart: spiffe-oidc-discovery-provider-0.1.0
-    app.kubernetes.io/name: spiffe-oidc-discovery-provider
-    app.kubernetes.io/instance: spire
-    app.kubernetes.io/version: "1.12.4"
     app.kubernetes.io/managed-by: Helm
 ---
 # Source: spire/charts/spire-agent/templates/serviceaccount.yaml
@@ -50,44 +491,6 @@ metadata:
     app.kubernetes.io/instance: spire
     app.kubernetes.io/version: "1.12.4"
     app.kubernetes.io/managed-by: Helm
----
-# Source: spire/charts/spiffe-oidc-discovery-provider/templates/configmap.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: spire-spiffe-oidc-discovery-provider
-  namespace: spire
-data:
-  oidc-discovery-provider.conf: |
-    {
-      "domains": [
-        "spire-spiffe-oidc-discovery-provider",
-        "spire-spiffe-oidc-discovery-provider.spire",
-        "spire-spiffe-oidc-discovery-provider.spire.svc.cluster.local",
-        "oidc-discovery.example.org"
-      ],
-      "health_checks": {
-        "bind_port": "8008",
-        "live_path": "/live",
-        "ready_path": "/ready"
-      },
-      "log_level": "info",
-      "serving_cert_file": {
-        "addr": ":8443",
-        "cert_file_path": "/certs/tls.crt",
-        "key_file_path": "/certs/tls.key"
-      },
-      "workload_api": {
-        "socket_path": "/spiffe-workload-api/spire-agent.sock",
-        "trust_domain": "example.org"
-      }
-    }
-  spiffe-helper.conf: |
-    agent_address = "/spiffe-workload-api/spire-agent.sock"
-    cert_dir = "/certs"
-    svid_file_name = "tls.crt"
-    svid_key_file_name = "tls.key"
-    svid_bundle_file_name = "ca.pem"
 ---
 # Source: spire/charts/spire-agent/templates/configmap.yaml
 apiVersion: v1
@@ -495,23 +898,6 @@ roleRef:
   name: spire-bundle
   apiGroup: rbac.authorization.k8s.io
 ---
-# Source: spire/charts/spiffe-oidc-discovery-provider/templates/service.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: spire-spiffe-oidc-discovery-provider
-  namespace: spire
-spec:
-  type: ClusterIP
-  ports:
-    - name: https
-      port: 443
-      targetPort: https
-      protocol: TCP
-  selector:
-    app.kubernetes.io/name: spiffe-oidc-discovery-provider
-    app.kubernetes.io/instance: spire
----
 # Source: spire/charts/spire-server/templates/controller-manager-service.yaml
 apiVersion: v1
 kind: Service
@@ -806,138 +1192,6 @@ spec:
           hostPath:
             path: /run/spire/sockets
             type: DirectoryOrCreate
----
-# Source: spire/charts/spiffe-oidc-discovery-provider/templates/deployment.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: spire-spiffe-oidc-discovery-provider
-  namespace: spire
-  labels:
-    helm.sh/chart: spiffe-oidc-discovery-provider-0.1.0
-    app.kubernetes.io/name: spiffe-oidc-discovery-provider
-    app.kubernetes.io/instance: spire
-    app.kubernetes.io/version: "1.12.4"
-    app.kubernetes.io/managed-by: Helm
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: spiffe-oidc-discovery-provider
-      app.kubernetes.io/instance: spire
-  template:
-    metadata:
-      annotations:
-        checksum/config: 22e59f50d7d41355ac52035e8680119204fb1621f0ec42b67d476da99c379f13
-      labels:
-        app.kubernetes.io/name: spiffe-oidc-discovery-provider
-        app.kubernetes.io/instance: spire
-        release: spire
-        release-namespace: spire
-        component: oidc-discovery-provider
-    spec:
-      serviceAccountName: spire-spiffe-oidc-discovery-provider
-      securityContext:
-        runAsGroup: 1000
-        runAsUser: 1000
-      initContainers:
-        - name: init
-          securityContext:
-            {}
-          resources:
-            {}
-          image: "ghcr.io/spiffe/spiffe-helper:0.10.0"
-          imagePullPolicy: IfNotPresent
-          args:
-            - -config
-            - /etc/spiffe-helper.conf
-            - -daemon-mode=false
-          volumeMounts:
-            - name: spiffe-workload-api
-              mountPath: /spiffe-workload-api
-              readOnly: true
-            - name: spire-oidc-config
-              mountPath: /etc/spiffe-helper.conf
-              subPath: spiffe-helper.conf
-              readOnly: true
-            - name: certdir
-              mountPath: /certs
-      containers:
-        - name: spiffe-oidc-discovery-provider
-          securityContext:
-            {}
-          image: "ghcr.io/spiffe/oidc-discovery-provider:1.12.4"
-          imagePullPolicy: IfNotPresent
-          args:
-            - -config
-            - /run/spire/oidc/config/oidc-discovery-provider.conf
-          ports:
-            - containerPort: 8008
-              name: healthz
-            - containerPort: 8443
-              name: https
-          volumeMounts:
-            - name: spiffe-workload-api
-              mountPath: /spiffe-workload-api
-              readOnly: true
-            - name: spire-oidc-sockets
-              mountPath: /run/spire/oidc-sockets
-              readOnly: false
-            - name: spire-oidc-config
-              mountPath: /run/spire/oidc/config/oidc-discovery-provider.conf
-              subPath: oidc-discovery-provider.conf
-              readOnly: true
-            - name: certdir
-              mountPath: /certs
-              readOnly: true
-          readinessProbe:
-            httpGet:
-              path: /ready
-              port: healthz
-            initialDelaySeconds: 5
-            periodSeconds: 5
-          livenessProbe:
-            httpGet:
-              path: /live
-              port: healthz
-            initialDelaySeconds: 5
-            periodSeconds: 5
-          resources:
-            {}
-        - name: spiffe-helper
-          resources:
-            {}
-          securityContext:
-            {}
-          image: "ghcr.io/spiffe/spiffe-helper:0.10.0"
-          imagePullPolicy: IfNotPresent
-          args:
-            - -config
-            - /etc/spiffe-helper.conf
-          volumeMounts:
-            - name: spiffe-workload-api
-              mountPath: /spiffe-workload-api
-              readOnly: true
-            - name: spire-oidc-config
-              mountPath: /etc/spiffe-helper.conf
-              subPath: spiffe-helper.conf
-              readOnly: true
-            - name: certdir
-              mountPath: /certs
-      volumes:
-        - name: spiffe-workload-api
-          csi:
-            driver: "csi.spiffe.io"
-            readOnly: true
-        - name: spire-oidc-sockets
-          emptyDir: {}
-        - name: spire-oidc-config
-          configMap:
-            name: spire-spiffe-oidc-discovery-provider
-        - name: nginx-tmp
-          emptyDir: {}
-        - name: certdir
-          emptyDir: {}
 ---
 # Source: spire/charts/spire-server/templates/server-resource.yaml
 apiVersion: apps/v1
@@ -1291,196 +1545,6 @@ webhooks:
         resources: ["clusterspiffeids"]
     sideEffects: None
 ---
-# Source: spire/charts/spiffe-oidc-discovery-provider/templates/pre-delete-hook.yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: spire-spiffe-oidc-discovery-provider-pre-delete
-  namespace: spire
-  labels:
-    helm.sh/chart: spiffe-oidc-discovery-provider-0.1.0
-    app.kubernetes.io/name: spiffe-oidc-discovery-provider
-    app.kubernetes.io/instance: spire
-    app.kubernetes.io/version: "1.12.4"
-    app.kubernetes.io/managed-by: Helm
-  annotations:
-    "helm.sh/hook": pre-delete
-    "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded, hook-failed
----
-# Source: spire/charts/spiffe-oidc-discovery-provider/templates/pre-delete-hook.yaml
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: spire-spiffe-oidc-discovery-provider-pre-delete
-  namespace: spire
-  annotations:
-    "helm.sh/hook": pre-delete
-    "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded, hook-failed
-rules:
-  - apiGroups: ["apps"]
-    resources: ["deployments"]
-    resourceNames: ["spire-spiffe-oidc-discovery-provider"]
-    verbs: ["get", "delete"]
----
-# Source: spire/charts/spiffe-oidc-discovery-provider/templates/pre-delete-hook.yaml
-kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: spire-spiffe-oidc-discovery-provider-pre-delete
-  namespace: spire
-  annotations:
-    "helm.sh/hook": pre-delete
-    "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded, hook-failed
-subjects:
-  - kind: ServiceAccount
-    name: spire-spiffe-oidc-discovery-provider-pre-delete
-    namespace: spire
-roleRef:
-  kind: Role
-  name: spire-spiffe-oidc-discovery-provider-pre-delete
-  apiGroup: rbac.authorization.k8s.io
----
-# Source: spire/charts/spiffe-oidc-discovery-provider/templates/tests/test-connection.yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: "spire-spiffe-oidc-discovery-provider-test-connection"
-  namespace: spire
-  labels:
-    helm.sh/chart: spiffe-oidc-discovery-provider-0.1.0
-    app.kubernetes.io/name: spiffe-oidc-discovery-provider
-    app.kubernetes.io/instance: spire
-    app.kubernetes.io/version: "1.12.4"
-    app.kubernetes.io/managed-by: Helm
-  annotations:
-    "helm.sh/hook": test
-spec:
-  securityContext:
-    {}
-  containers:
-    - name: curl-service-name
-      image: "cgr.dev/chainguard/bash:latest@sha256:eefb26b2a87b897e4dad65909dad8a7896fe3ed97aa76ac874fa3594011256ea"
-      command: ['curl']
-      args: ['-s', '-f', '-k', 'https://spire-spiffe-oidc-discovery-provider:443/.well-known/openid-configuration']
-      securityContext:
-        {}
-    - name: curl-service-name-namespace
-      image: "cgr.dev/chainguard/bash:latest@sha256:eefb26b2a87b897e4dad65909dad8a7896fe3ed97aa76ac874fa3594011256ea"
-      command: ['curl']
-      args: ['-s', '-f', '-k', 'https://spire-spiffe-oidc-discovery-provider.spire:443/.well-known/openid-configuration']
-      securityContext:
-        {}
-    - name: curl-service-name-namespace-svc-cluster-local
-      image: "cgr.dev/chainguard/bash:latest@sha256:eefb26b2a87b897e4dad65909dad8a7896fe3ed97aa76ac874fa3594011256ea"
-      command: ['curl']
-      args: ['-s', '-f', '-k', 'https://spire-spiffe-oidc-discovery-provider.spire.svc.cluster.local:443/.well-known/openid-configuration']
-      securityContext:
-        {}
-  restartPolicy: Never
----
-# Source: spire/charts/spiffe-oidc-discovery-provider/templates/tests/test-keys.yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: "spire-spiffe-oidc-discovery-provider-test-keys"
-  namespace: spire
-  labels:
-    helm.sh/chart: spiffe-oidc-discovery-provider-0.1.0
-    app.kubernetes.io/name: spiffe-oidc-discovery-provider
-    app.kubernetes.io/instance: spire
-    app.kubernetes.io/version: "1.12.4"
-    app.kubernetes.io/managed-by: Helm
-    release: spire
-    release-namespace: spire
-    component: test-keys
-  annotations:
-    "helm.sh/hook": test
-spec:
-  securityContext:
-    {}
-  serviceAccountName: spire-spiffe-oidc-discovery-provider
-  initContainers:
-    - name: static-busybox
-      image: "busybox:1.37.0-uclibc"
-      command:
-        - sh
-        - -c
-        - |
-          cp /bin/busybox /data/busybox
-          chmod +x /data/busybox
-      securityContext:
-        {}
-      volumeMounts:
-        - name: data-volume
-          mountPath: /data
-    - name: install-step
-      image: "docker.io/smallstep/step-cli:0.28.6"
-      workingDir: /data
-      command:
-        - sh
-        - -c
-        - |
-          cp /usr/local/bin/step /data/step
-      securityContext:
-        {}
-      volumeMounts:
-        - name: data-volume
-          mountPath: /data
-    - name: gettoken
-      image: "ghcr.io/spiffe/spire-agent:1.12.4"
-      command:
-        - /data/busybox
-        - sh
-        - -c
-        - |
-          while true; do
-            /opt/spire/bin/spire-agent api fetch jwt -audience foo -format json -socketPath /spire-agent/spire-agent.sock -timeout 5s > /data/token.svid
-            [ $? -eq 0 ] && break
-            sleep 1
-          done
-      securityContext:
-        {}
-      volumeMounts:
-        - name: data-volume
-          mountPath: /data
-        - name: spire-api
-          mountPath: /spire-agent
-          readOnly: true
-  containers:
-    - name: verify-keys
-      image: "cgr.dev/chainguard/min-toolkit-debug:latest@sha256:3dd03ca4056a6c8024ed1e5dc0999aa836c0c28777dcc3b85bd1d9d853e1ed38"
-      command:
-        - bash
-      workingDir: /data
-      env:
-      - name: TMPDIR
-        value: /data
-      args:
-        - -cx
-        - |
-          URL=https://spire-spiffe-oidc-discovery-provider.spire.svc.cluster.local:443
-
-          cat /data/token.svid
-          JWT=$(cat /data/token.svid | jq -r '.[] | select(.svids) | .svids[0].svid' | xargs)
-          KID=$(echo $JWT | base64 -d 2>/dev/null | jq -r '.kid')
-          # Retrieve public key from JWK set, match kid from JWT to locate the correct one
-          curl -k -s --fail-with-body "${URL}"/keys | jq '.keys[] | select(.kid == "'${KID}'")' > public.pem
-          # Verify JWT with public pem
-          echo $JWT | /data/step crypto jwt verify --key=public.pem --alg=RS256 --subtle
-      securityContext:
-        {}
-      volumeMounts:
-      - mountPath: /data
-        name: data-volume
-  restartPolicy: Never
-  volumes:
-  - csi:
-      driver: csi.spiffe.io
-      readOnly: true
-    name: spire-api
-  - name: data-volume
-    emptyDir: {}
----
 # Source: spire/charts/spire-server/templates/tests/test-connection.yaml
 apiVersion: v1
 kind: Pod
@@ -1519,41 +1583,4 @@ spec:
       securityContext:
         {}
   restartPolicy: Never
----
-# Source: spire/charts/spiffe-oidc-discovery-provider/templates/pre-delete-hook.yaml
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: spire-spiffe-oidc-discovery-provider-pre-delete
-  namespace: spire
-  labels:
-    helm.sh/chart: spiffe-oidc-discovery-provider-0.1.0
-    app.kubernetes.io/name: spiffe-oidc-discovery-provider
-    app.kubernetes.io/instance: spire
-    app.kubernetes.io/version: "1.12.4"
-    app.kubernetes.io/managed-by: Helm
-  annotations:
-    "helm.sh/hook": pre-delete
-    "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded, hook-failed
-spec:
-  template:
-    metadata:
-      name: spire-spiffe-oidc-discovery-provider-pre-delete
-    spec:
-      restartPolicy: Never
-      serviceAccountName: spire-spiffe-oidc-discovery-provider-pre-delete
-      securityContext:
-        {}
-      containers:
-      - name: pre-delete-job
-        securityContext:
-          {}
-        image: "docker.io/rancher/kubectl:v1.34.0"
-        args:
-          - delete
-          - -n
-          - spire
-          - deployment
-          - spire-spiffe-oidc-discovery-provider
-          - --wait
 

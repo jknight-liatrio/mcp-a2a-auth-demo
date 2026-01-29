@@ -18,6 +18,9 @@ global:
       organization: SPIFFE
       commonName: example.org
 
+spiffe-oidc-discovery-provider:
+  enabled: false
+
 spire-server:
   jwtIssuer: "spiffe://example.org"
   nodeAttestor:

@@ -70,13 +70,13 @@ static_resources:
                     envoy_grpc:
                       cluster_name: spire_agent
             combined_validation_context:
-              # ‡@ Validate the peer's SPIFFE ID
+              # ï¿½@ Validate the peer's SPIFFE ID
               default_validation_context:
                 match_typed_subject_alt_names:
                 - san_type: URI
                   matcher:
                     exact: "spiffe://example.org/ns/default/sa/default/frontend"
-              # ‡A Obtain the trust bundle from SDS (required)
+              # ï¿½A Obtain the trust bundle from SDS (required)
               validation_context_sds_secret_config:
                 name: "spiffe://example.org"
                 sds_config:
@@ -105,7 +105,7 @@ static_resources:
         - endpoint:
             address:
               pipe:
-                path: /run/spire/sockets/agent.sock
+                path: /run/spire/sockets/spire-agent.sock
 
   # External authorization helper (your ext_authz server) co-located in Pod B
   - name: ext-authz

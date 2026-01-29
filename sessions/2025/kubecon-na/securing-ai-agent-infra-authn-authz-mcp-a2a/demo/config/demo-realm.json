@@ -395,6 +395,29 @@
   "webAuthnPolicyPasswordlessAcceptableAaguids" : [ ],
   "webAuthnPolicyPasswordlessExtraOrigins" : [ ],
   "users" : [ {
+    "id" : "b0418609-d1ce-46bd-b6c4-3438028e2a0c",
+    "username" : "joek",
+    "firstName" : "Joe",
+    "lastName" : "Knight",
+    "email" : "joek@liatrio.com",
+    "emailVerified" : false,
+    "enabled" : true,
+    "createdTimestamp" : 1769637680716,
+    "totp" : false,
+    "credentials" : [ {
+      "id" : "2c38166d-ceb2-4db0-ad76-a1587e1873d8",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1769637692156,
+      "secretData" : "{\"value\":\"3TXmr6OaNblAYALRwofiG7qFnvIKt+HJ6wZagQf/AEg=\",\"salt\":\"FtzfQtjYvvL/Au42wBplqg==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":5,\"algorithm\":\"argon2\",\"additionalParameters\":{\"hashLength\":[\"32\"],\"memory\":[\"7168\"],\"type\":[\"id\"],\"version\":[\"1.3\"],\"parallelism\":[\"1\"]}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-demo" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
     "id" : "4afbf908-fa84-4205-b9df-ebc5b3cec189",
     "username" : "service-account-spiffe://example.org/ns/default/sa/default/backend",
     "emailVerified" : false,
@@ -781,7 +804,7 @@
         "logic" : "POSITIVE",
         "decisionStrategy" : "UNANIMOUS",
         "config" : {
-          "users" : "[\"y-tabata\"]"
+          "users" : "[\"y-tabata\", \"joek\"]"
         }
       }, {
         "name" : "perm_mcp_post",
@@ -870,7 +893,7 @@
         "logic" : "POSITIVE",
         "decisionStrategy" : "UNANIMOUS",
         "config" : {
-          "users" : "[\"y-tabata\"]"
+          "users" : "[\"y-tabata\", \"joek\"]"
         }
       }, {
         "name" : "perm_mcp_post",
