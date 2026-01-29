@@ -651,6 +651,18 @@ data:
         "data_dir": "/run/spire/data",
         "default_jwt_svid_ttl": "1h",
         "default_x509_svid_ttl": "4h",
+        "federation": {
+          "bundle_endpoint": {
+            "address": "0.0.0.0",
+            "port": 8443,
+            "profile": [
+              {
+                "https_spiffe": {}
+              }
+            ],
+            "refresh_hint": "5m"
+          }
+        },
         "jwt_issuer": "spiffe://example.org",
         "log_level": "info",
         "trust_domain": "example.org"
@@ -940,6 +952,10 @@ spec:
       port: 443
       targetPort: grpc
       protocol: TCP
+    - name: federation
+      port: 8443
+      targetPort: federation
+      protocol: TCP
   selector:
     app.kubernetes.io/name: server
     app.kubernetes.io/instance: spire
@@ -1218,7 +1234,7 @@ spec:
     metadata:
       annotations:
         kubectl.kubernetes.io/default-container: spire-server
-        checksum/config: 736eadd36ffcca834fac9339588bb8f1090e996a9d535136980c6c16aaa39c19
+        checksum/config: b7ca425308d4b46867cbef5ca05a0f1fdf028fc93e4b12fdb09fde852d3a6ff9
         checksum/config2: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
         checksum/config3: d94dc72279f0c877c9231caef9a5e9a792de6a59f584a392580b28e59bb6752f
         checksum/configTornjak: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
@@ -1271,6 +1287,9 @@ spec:
               protocol: TCP
             - containerPort: 8080
               name: healthz
+            - name: federation
+              containerPort: 8443
+              protocol: TCP
           livenessProbe:
             httpGet:
               path: /live
@@ -1580,6 +1599,12 @@ spec:
             exit 0
           fi
           exit 1
+      securityContext:
+        {}
+    - name: curl-federation-bundle-endpoint
+      image: "cgr.dev/chainguard/bash:latest@sha256:eefb26b2a87b897e4dad65909dad8a7896fe3ed97aa76ac874fa3594011256ea"
+      command: ['curl']
+      args: ['-k', '-s', '-f', 'https://spire-server.spire.svc.cluster.local:8443']
       securityContext:
         {}
   restartPolicy: Never

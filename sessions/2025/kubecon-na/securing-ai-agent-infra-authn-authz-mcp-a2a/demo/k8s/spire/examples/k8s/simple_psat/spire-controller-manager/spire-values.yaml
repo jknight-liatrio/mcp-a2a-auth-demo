@@ -23,6 +23,10 @@ spiffe-oidc-discovery-provider:
 
 spire-server:
   jwtIssuer: "spiffe://example.org"
+  federation:
+    enabled: true
+    bundleEndpoint:
+      port: 8443
   nodeAttestor:
     k8sPSAT:
       enabled: true
