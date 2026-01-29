@@ -3,6 +3,12 @@
 # Load namespace extension to prevent Tilt from deleting namespaces it didn't create
 load('ext://namespace', 'namespace_create')
 
+# ============================================================
+# Namespaces (created independently before resources)
+# ============================================================
+namespace_create('spire')
+namespace_create('ingress-nginx')
+
 # Tiltfile for MCP A2A Auth Demo
 # Manages kustomize resources and envoy-jwt-auth-helper image builds
 #
@@ -38,7 +44,7 @@ docker_build(
 # ============================================================
 
 # Load all resources via kustomize
-k8s_yaml(kustomize('.'))
+k8s_yaml(kustomize('.'), allow_duplicates=True)
 
 # ============================================================
 # Resource Groups
@@ -83,12 +89,13 @@ k8s_resource(
 k8s_resource(
     'backend',
     labels=['app'],
+    resource_deps=['keycloak', 'spire-agent', 'ingress-nginx'],
 )
 
 k8s_resource(
     'frontend',
     labels=['app'],
-    resource_deps=['backend'],
+    resource_deps=['backend', 'keycloak', 'spire-agent', 'ingress-nginx'],
     port_forwards=['3000:3000'],
 )
 
@@ -106,6 +113,8 @@ watch_file('./k8s/frontend/frontend-deployment.yaml')
 
 # Watch keycloak/infra configs
 watch_file('./config/')
+watch_file('./k8s/ingress-nginx/config/')
+watch_file('./k8s/ingress-nginx/ingress-nginx-deployment.yaml')
 
 # Watch SPIRE configs
 watch_file('./spire/')
